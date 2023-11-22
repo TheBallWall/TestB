@@ -7,7 +7,7 @@ public class Message {
     private final UUID id;
     private final LocalDateTime dateTime;
 
-    public Message(){
+    public Message() {
         id = UUID.randomUUID();
         dateTime = LocalDateTime.now();
     }
