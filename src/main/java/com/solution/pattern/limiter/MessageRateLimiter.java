@@ -23,10 +23,6 @@ public class MessageRateLimiter implements RateLimiter {
     @Override
     public boolean acquire() {
         refresh();
-//        if(currentNumberOfTokens.get() > 0){
-//            currentNumberOfTokens.decrementAndGet();
-//            return true;
-//        }
         return currentNumberOfTokens.getAndDecrement() > 0;
     }
 

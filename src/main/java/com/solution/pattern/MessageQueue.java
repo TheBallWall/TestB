@@ -4,23 +4,23 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class MessageQueue {
-    private final BlockingQueue<Message> queue = new LinkedBlockingQueue<>();
+    public final BlockingQueue<Message> queue = new LinkedBlockingQueue<>();
     private final int maxSize;
-    private final Object IS_NOT_FULL = new Object();
-    private final Object IS_NOT_EMPTY = new Object();
+    private final Object PRODUCER_BLOCK = new Object(); // blocks producer threads when queue is full
+    private final Object CONSUMER_BLOCK = new Object(); // blocks consumer threads when queue is empty
 
     public MessageQueue(int maxSize) {
         this.maxSize = maxSize;
     }
 
-    public void add(Message message){
-        queue.add(message);
-        notifyIsNotEmpty();
+    public void add(Message message) throws InterruptedException {
+        queue.put(message);
+        //notifyConsumerBlock();
     }
 
-    public Message remove(){
-        Message message = queue.poll();
-        notifyIsNotFull();
+    public Message remove() throws InterruptedException {
+        Message message = queue.take();
+        //if(queue.size() < maxSize) notifyProducerBlock();
         return message;
     }
 
@@ -36,25 +36,25 @@ public class MessageQueue {
         return queue.size();
     }
 
-    public void waitIsNotFull() throws InterruptedException {
-        synchronized (IS_NOT_FULL){
-            IS_NOT_FULL.wait();
-        }
-    }
-    public void notifyIsNotFull(){
-        synchronized (IS_NOT_FULL){
-            IS_NOT_FULL.notify();
-        }
-    }
-    public void waitIsNotEmpty() throws InterruptedException {
-        synchronized (IS_NOT_EMPTY){
-            IS_NOT_EMPTY.wait();
-        }
-    }
-
-    public void notifyIsNotEmpty(){
-        synchronized (IS_NOT_EMPTY){
-            IS_NOT_EMPTY.notify();
-        }
-    }
+//    public void waitProducerBlock() throws InterruptedException {
+//        synchronized (PRODUCER_BLOCK){
+//            PRODUCER_BLOCK.wait();
+//        }
+//    }
+//    public void notifyProducerBlock(){
+//        synchronized (PRODUCER_BLOCK){
+//            PRODUCER_BLOCK.notify();
+//        }
+//    }
+//    public void waitConsumerBlock() throws InterruptedException {
+//        synchronized (CONSUMER_BLOCK){
+//            CONSUMER_BLOCK.wait();
+//        }
+//    }
+//
+//    public void notifyConsumerBlock(){
+//        synchronized (CONSUMER_BLOCK){
+//            CONSUMER_BLOCK.notify();
+//        }
+//    }
 }

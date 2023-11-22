@@ -1,7 +1,6 @@
 package com.solution.pattern;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class Consumer implements Runnable {
@@ -21,20 +20,8 @@ public class Consumer implements Runnable {
     public void consume() {
         System.out.println("Consumer started");
         while (running) {
-            if (queue.isEmpty()) {
-                try {
-                    queue.waitIsNotEmpty();
-                } catch (InterruptedException e) {
-                    System.out.println("Error: Consumer - waiting");
-                    System.out.println(new RuntimeException(e));
-                    break;
-                }
-            }
-            if (!running) {
-                break;
-            }
-            Message message = queue.remove();
             try {
+                Message message = queue.remove();
                 Thread.sleep(20);
                 StringBuilder formattedMessage = new StringBuilder("Consumed: ");
                 formattedMessage
@@ -58,6 +45,6 @@ public class Consumer implements Runnable {
 
     public void stop() {
         running = false;
-        queue.notifyIsNotEmpty();
+        Thread.currentThread().interrupt();
     }
 }
