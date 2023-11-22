@@ -2,26 +2,21 @@ package com.solution.pattern;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.BlockingQueue;
 
 public class Consumer implements Runnable {
-    private MessageQueue queue;
-    private boolean running = false;
+    private final BlockingQueue<Message> queue;
 
-    public Consumer(MessageQueue queue) {
+    public Consumer(BlockingQueue<Message> queue) {
         this.queue = queue;
     }
 
     @Override
     public void run() {
-        running = true;
-        consume();
-    }
-
-    public void consume() {
         System.out.println("Consumer started");
-        while (running) {
-            try {
-                Message message = queue.remove();
+        try {
+            while (!Thread.interrupted()) {
+                Message message = queue.take();
                 Thread.sleep(20);
                 StringBuilder formattedMessage = new StringBuilder("Consumed: ");
                 formattedMessage
@@ -31,20 +26,13 @@ public class Consumer implements Runnable {
                         .append(" | ")
                         .append(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS")))
                         .append(" | Queue size: ")
-                        .append(queue.getCurrentQueueSize());
+                        .append(queue.size());
 
                 System.out.println(formattedMessage);
-            } catch (InterruptedException e) {
-                System.out.println("Error: Consumer - processing");
-                System.out.println(new RuntimeException(e));
-                break;
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
         System.out.println("Consumer finished");
-    }
-
-    public void stop() {
-        running = false;
-        Thread.currentThread().interrupt();
     }
 }

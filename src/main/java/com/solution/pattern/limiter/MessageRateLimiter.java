@@ -26,8 +26,8 @@ public class MessageRateLimiter implements RateLimiter {
         return currentNumberOfTokens.getAndDecrement() > 0;
     }
 
-    private void refresh(){
-        if(LocalDateTime.now().isAfter(nextRefreshTime)){
+    private void refresh() {
+        if (LocalDateTime.now().isAfter(nextRefreshTime)) {
             currentNumberOfTokens.set(rateLimit);
             lastRefreshTime = LocalDateTime.now();
             nextRefreshTime = lastRefreshTime.plus(rateRefreshTime, ChronoUnit.MILLIS);
