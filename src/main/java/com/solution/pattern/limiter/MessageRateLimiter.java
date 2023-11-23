@@ -9,7 +9,6 @@ public class MessageRateLimiter implements RateLimiter {
     private final int rateLimit;
     private final int rateRefreshTime;
     private AtomicInteger currentNumberOfTokens;
-    private LocalDateTime lastRefreshTime;
     private LocalDateTime nextRefreshTime;
 
     public MessageRateLimiter(int rateLimit, int rateRefreshTime) {
@@ -29,8 +28,7 @@ public class MessageRateLimiter implements RateLimiter {
     private void refresh() {
         if (LocalDateTime.now().isAfter(nextRefreshTime)) {
             currentNumberOfTokens.set(rateLimit);
-            lastRefreshTime = LocalDateTime.now();
-            nextRefreshTime = lastRefreshTime.plus(rateRefreshTime, ChronoUnit.MILLIS);
+            nextRefreshTime = LocalDateTime.now().plus(rateRefreshTime, ChronoUnit.MILLIS);
         }
     }
 }

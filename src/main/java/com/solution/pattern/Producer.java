@@ -3,6 +3,7 @@ package com.solution.pattern;
 import com.solution.pattern.limiter.RateLimiter;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 public class Producer implements Runnable {
@@ -20,8 +21,11 @@ public class Producer implements Runnable {
         try {
             while (!Thread.interrupted()) {
                 if (rateLimiter.acquire()) {
-                    Message message = new Message();
-                    queue.put(message);
+
+                    // Simulate producer time delay between requests
+                    Thread.sleep(ThreadLocalRandom.current().nextInt(10,20));
+
+                    queue.put(new Message());
                 }
             }
         } catch (InterruptedException e) {
